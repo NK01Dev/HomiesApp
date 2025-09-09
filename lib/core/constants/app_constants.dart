@@ -1,6 +1,15 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AppConstants {
+
+
+  static const Duration apiTimeout = Duration(seconds: 30);
+
+
+  //region Hive id types
+  static const int hiveTypeUser = 1;
+
+  static const double maxWidthBottomSheet = 700;
   static String appName = dotenv.env['APP_NAME'] ?? 'HomiesApp';
   static String supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
   static String supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
