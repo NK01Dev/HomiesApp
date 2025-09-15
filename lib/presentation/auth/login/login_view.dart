@@ -122,8 +122,7 @@ class LoginView extends BaseView<LoginViewModel, UserEntity> {
                 width: double.infinity, // باش ياخد كامل العرض
                 child: OutlinedButton(
                   onPressed: () {
-    GetIt.I<AppRouter>().router.go('/register');
-                  },
+controller.toRegister();                  },
                   child: Text(
                     "Register",
 

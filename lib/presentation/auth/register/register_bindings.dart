@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:homies_app/presentation/auth/login/login_viewmodel.dart';
+import 'package:homies_app/presentation/auth/register/regiser_viewmodel.dart';
 import 'package:homies_app/presentation/base/base_bindings.dart';
 
 class RegisterBindings extends BaseBindings {
@@ -7,7 +7,7 @@ class RegisterBindings extends BaseBindings {
   void dependencies() {
     super.dependencies();
 
-    Get.lazyPut(() => LoginViewModel());
+    Get.lazyPut(() => RegiserViewmodel());
   }
 
   @override

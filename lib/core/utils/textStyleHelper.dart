@@ -4,7 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class TextStyleHelper {
   static const String _fontFamily = 'Poppins';
   static const FontWeight _defaultWeight = FontWeight.w500;
-
+  static TextStyle textStyle24({Color color = Colors.black}) =>
+      _baseStyle(24, color);
   static TextStyle textStyle18({Color color = Colors.black}) =>
       _baseStyle(18, color);
 
