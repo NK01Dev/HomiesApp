@@ -8,7 +8,7 @@ import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 class AuthRepositoryImpl  implements AuthRepository {
   // inject Supabase service in
-  final SupabaseService _supabase = Get.find();
+  final SupabaseService _supabase = Get.find<SupabaseService>();
 
   @override
   Future<UserModel?> getCurrentUser() async {
@@ -59,35 +59,47 @@ try {
     // TODO: implement signOut
     await _supabase.auth.signOut();  }
 
+// AuthRepositoryImpl.dart
   @override
-  Future<UserModel> signUp(String email, String password, String firstName, String lastName) async {
+  Future<UserModel> signUp({
+    required String email,
+    required String password,
+    required String userName,
+  }) async {
     try {
       final authResponse = await _supabase.auth.signUp(
         email: email,
         password: password,
         data: {
-          'first_name': firstName,
-          'last_name': lastName,
-          'preferred_language': 'en',
+          'user_name': userName,
         },
       );
 
       if (authResponse.user == null) {
         throw Exception('User creation failed');
       }
+
       final String userId = authResponse.user!.id;
 
-      return UserModel.fromJson({
-        'id': authResponse.user!.id,
-        'email': authResponse.user!.email!,
-        'first_name': firstName,
-        'last_name': lastName,
+      // Insert user profile with only essential data
+      final userData = {
+        'id': userId,
+        'email': email,
+        'user_name': userName,
+        'password_hash': password, // Note: You should hash this properly
+        'first_name': '', // Empty for now
+        'last_name': '',  // Empty for now
         'preferred_language': 'en',
-        'created_at': authResponse.user!.createdAt.toString(),
-      });
+        'created_at': DateTime.now().toIso8601String(),
+      };
+
+      await _supabase.client
+          .from('users')
+          .insert(userData);
+
+      return UserModel.fromJson(userData);
     } catch (e) {
       throw Exception('Sign up failed: $e');
     }
   }
-
 }

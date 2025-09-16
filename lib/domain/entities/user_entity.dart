@@ -4,8 +4,9 @@
     final String id;
     final String email;
     final String passwordHash;
-    final String firstName;
-    final String lastName;
+    final String? firstName; // Make optional
+    final String? lastName;  // Make optional
+    final String userName;
     final String? phoneNumber;
     final DateTime? dateOfBirth;
     final String? gender;
@@ -22,8 +23,9 @@
       required this.id,
       required this.email,
       required this.passwordHash,
-      required this.firstName,
-      required this.lastName,
+      required this.userName, // Add required userName
+      this.firstName,
+      this.lastName,
       this.phoneNumber,
       this.dateOfBirth,
       this.gender,
@@ -42,6 +44,7 @@
       id,
       email,
       passwordHash,
+      userName, // Add to props
       firstName,
       lastName,
       phoneNumber,

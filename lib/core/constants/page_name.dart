@@ -5,4 +5,5 @@ abstract class pageName {
   static const splash='/';
   static const register='/register';
   static const auth='/auth';
+  static const onboard='/onboard';
 }

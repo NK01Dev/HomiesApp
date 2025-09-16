@@ -7,6 +7,8 @@ import 'package:homies_app/presentation/auth/login/login_bindings.dart';
 import 'package:homies_app/presentation/auth/login/login_view.dart';
 import 'package:homies_app/presentation/auth/register/register_bindings.dart';
 import 'package:homies_app/presentation/auth/register/register_view.dart';
+import 'package:homies_app/presentation/onboarding/onbloarding_bindings.dart';
+import 'package:homies_app/presentation/onboarding/onboarding_view.dart';
 import 'package:homies_app/presentation/splash/splash_bindings.dart';
 import 'package:homies_app/presentation/splash/splas_view.dart';
 import 'package:injectable/injectable.dart';
@@ -41,7 +43,12 @@ class AppRouter {
           RegisterBindings().dependencies();
           return RegisterView();
         },
-        )
+        ),
+        GoRoute(path: pageName.onboard,
+        builder: (context, state) {
+          OnbloardingBindings().dependencies();
+          return OnboardingView();
+        },)
       ],
     );
   }

@@ -10,16 +10,30 @@ class SupabaseService extends GetxService {
   late final GoTrueClient auth;
 
   Future<SupabaseService> init() async {
-    await Supabase.initialize(
-      url: AppConstants.supabaseUrl,
-      anonKey: AppConstants.supabaseAnonKey,
-    );
+    try {
+      await Supabase.initialize(
+        url: AppConstants.supabaseUrl,
+        anonKey: AppConstants.supabaseAnonKey,
+        // Add web-specific configuration
+        authOptions: const FlutterAuthClientOptions(
+          authFlowType: AuthFlowType.pkce,
+          // Enable persistence for web
+          autoRefreshToken: true,
+        ),
+        // Optional: Add realtime for web if needed
+        realtimeClientOptions: const RealtimeClientOptions(
+          logLevel: RealtimeLogLevel.info,
+        ),
+      );
 
-    client = Supabase.instance.client;
-    AppLogger.info('Supabase initialized successfully.');
+      client = Supabase.instance.client;
+      auth = client.auth;
 
-    auth = client.auth;
-
-    return this;
+      AppLogger.info('Supabase initialized successfully.');
+      return this;
+    } catch (e) {
+      AppLogger.error('Failed to initialize Supabase: $e');
+      rethrow;
+    }
   }
 }

@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_it/get_it.dart';
 import 'package:homies_app/core/router/app_router.dart';
+import 'package:homies_app/di/app_bindings.dart';
+import 'package:homies_app/di/init_app_module.dart';
 import 'package:homies_app/di/injection.dart';
 import 'package:homies_app/presentation/splash/splas_view.dart';
 
   void main() async {
     WidgetsFlutterBinding.ensureInitialized();
+
+    await dotenv.load(fileName: ".env");
+
+    // Initialize all app modules and dependencies FIRST
+    await initAppModule();
+
     await configureDependencies(); // injectable / get_it
     runApp(const MyApp());
   }
