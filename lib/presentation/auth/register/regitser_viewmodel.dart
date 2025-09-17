@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:homies_app/core/constants/page_name.dart';
+import 'package:homies_app/core/constants/utils.dart' show logMsg;
 import 'package:homies_app/core/router/app_router.dart';
 import 'package:homies_app/domain/entities/user_entity.dart';
 import 'package:homies_app/domain/repositories/AuthRepositoryInterface.dart';
@@ -9,13 +10,13 @@ import 'package:homies_app/presentation/auth/login/login_viewmodel.dart';
 import 'package:homies_app/presentation/base/base_bindings.dart';
 import 'package:homies_app/presentation/base/base_viewmodel.dart';
 
-class RegiserViewmodel extends BaseViewModel<UserEntity> {
+class RegisterViewModel extends BaseViewModel<UserEntity> {
 ///GlobalKey<FormState> → remote control of the form.
   final formKey =GlobalKey<FormState>();
   final RxBool _isLoading = false.obs;
 
   RxBool get isLoading => _isLoading; // 👈 add this getter
-  RxBool passwordVisible = false.obs;
+  RxBool passwordVisible = true.obs;
   RxBool confirmPasswordVisible = false.obs;
 
   ///TextEditingController → keeps the text of each input.
@@ -64,43 +65,46 @@ String? validateUsername(String? value) {
   }
 
   Future<void> register() async {
-    if (formKey.currentState!.validate()) {
-      _isLoading.value = true; // start loading
-
-      try {
-        // Use change() to update state with loading
-        change(null, status: RxStatus.loading());
-        if (emailController.text != null && passwordController.text != null) {
-          Get.snackbar('Info', 'Trying to register...');
-        } else {
-          Get.snackbar('Error', 'Email or password is null');
-        }
-
-        final user = await _authRepository.signUp(
-          email: emailController.text.trim(),
-          password: passwordController.text,
-          userName: usernameController.text.trim(),
-        );
-
-        // Update state with success
-        change(user, status: RxStatus.success());
-
-        Get.snackbar("Success", "Account created successfully ✅");
-        formKey.currentState?.reset();
-
-        // Navigate after a short delay to show success message
-        await Future.delayed(Duration(seconds: 1));
-        Get.offAllNamed(pageName.auth);
-
-      } catch (e) {
-        // Update state with error
-        change(null, status: RxStatus.error(e.toString()));
-        Get.snackbar("Error", "Registration failed: ${e.toString()}");
-      }finally {
-        _isLoading.value = false; // stop loading
-      }
-    } else {
+    if (!formKey.currentState!.validate()) {
       Get.snackbar("Error", "Please fix errors ❌");
+      return;
+    }
+
+    _isLoading.value = true;
+    change(null, status: RxStatus.loading());
+
+    try {
+      logMsg('Starting registration with:');
+      logMsg('Email: ${emailController.text}');
+      logMsg('Username: ${usernameController.text}');
+
+      final user = await _authRepository.signUp(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+        userName: usernameController.text.trim(),
+      );
+
+      logMsg('Registration successful: ${user.id}');
+
+      // SUCCÈS
+      change(user, status: RxStatus.success());
+
+      Get.snackbar("Success", "Account created successfully ✅");
+      formKey.currentState?.reset();
+
+      // Naviguer après un délai
+      await Future.delayed(const Duration(seconds: 2));
+      Get.offAllNamed(pageName.auth);
+
+    } catch (e, stackTrace) {
+      logMsg('Registration error: $e');
+      logMsg('Stack trace: $stackTrace');
+
+      // ERREUR
+      change(null, status: RxStatus.error(e.toString()));
+      Get.snackbar("Error", "Registration failed: ${e.toString()}");
+    } finally {
+      _isLoading.value = false;
     }
   }
   @override

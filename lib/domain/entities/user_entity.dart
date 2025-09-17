@@ -3,7 +3,7 @@
   class UserEntity extends Equatable {
     final String id;
     final String email;
-    final String passwordHash;
+    final String? passwordHash;
     final String? firstName; // Make optional
     final String? lastName;  // Make optional
     final String userName;
@@ -22,7 +22,7 @@
     const UserEntity({
       required this.id,
       required this.email,
-      required this.passwordHash,
+       this.passwordHash,
       required this.userName, // Add required userName
       this.firstName,
       this.lastName,

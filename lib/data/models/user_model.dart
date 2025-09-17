@@ -9,7 +9,7 @@ class UserModel extends UserEntity {
   const UserModel({
     required String id,
     required String email,
-    required String passwordHash,
+     String? passwordHash,
     required String userName,
     String? firstName,
     String? lastName,

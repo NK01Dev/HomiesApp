@@ -93,7 +93,9 @@ class LoginView extends BaseView<LoginViewModel, UserEntity> {
                 width: double.infinity, // باش ياخد كامل العرض
 
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    controller.toLogin();
+                  },
                   style: ButtonStyle(
                     shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(

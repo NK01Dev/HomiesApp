@@ -5,6 +5,8 @@ import 'package:homies_app/core/constants/page_name.dart';
 import 'package:homies_app/core/router/routes.dart';
 import 'package:homies_app/presentation/auth/login/login_bindings.dart';
 import 'package:homies_app/presentation/auth/login/login_view.dart';
+import 'package:homies_app/presentation/auth/loginPage/loginPage_bindings.dart';
+import 'package:homies_app/presentation/auth/loginPage/loginPage_view.dart';
 import 'package:homies_app/presentation/auth/register/register_bindings.dart';
 import 'package:homies_app/presentation/auth/register/register_view.dart';
 import 'package:homies_app/presentation/onboarding/onbloarding_bindings.dart';
@@ -30,6 +32,11 @@ class AppRouter {
             return const SplashView();
           },
         ),
+        GoRoute(path: pageName.login,
+        builder: (context, state) {
+          LoginpageBindings().dependencies();
+          return LoginpageView();
+        },),
         GoRoute(
           path: pageName.auth,
           builder: (context, state) {

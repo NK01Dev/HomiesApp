@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:homies_app/core/themes/app_colors.dart';
 import 'package:homies_app/core/utils/textStyleHelper.dart';
 import 'package:homies_app/domain/entities/user_entity.dart';
-import 'package:homies_app/presentation/auth/register/regitser_viewmodel.dart';
+import 'package:homies_app/presentation/auth/login/login_viewmodel.dart';
+import 'package:homies_app/presentation/auth/loginPage/loginPage_viewmodel.dart';
 import 'package:homies_app/presentation/base/base_view.dart';
 
-class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
+class LoginpageView extends BaseView<LoginpageViewmodel, UserEntity> {
   final responsiveTextStyle = TextStyleHelper.textStyle18(color: Colors.blue);
 
   @override
@@ -32,12 +34,14 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
       ),
     );
   }
+
   @override
   Widget showEmptyWidget({bool refresh = true}) {
     // TODO: implement showEmptyWidget
     return Scaffold(
       body: Center(child: Text("showEmptyWidget", style: responsiveTextStyle)),
-    );  }
+    );
+  }
 
   @override
   Widget showErrorWidget(String? error) {
@@ -48,14 +52,20 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
           children: [
             Icon(Icons.error_outline, size: 48.sp, color: Colors.red),
             SizedBox(height: 16.h),
-            Text("Registration Error",
-                style: TextStyleHelper.textStyle16(color: Colors.red)),
+            Text(
+              "Login Error",
+              style: TextStyleHelper.textStyle16(color: Colors.red),
+            ),
             SizedBox(height: 8.h),
-            Text(error ?? "Unknown error",
-                style: TextStyleHelper.textStyle14(), textAlign: TextAlign.center),
+            Text(
+              error ?? "Unknown error",
+              style: TextStyleHelper.textStyle14(),
+              textAlign: TextAlign.center,
+            ),
             SizedBox(height: 16.h),
             ElevatedButton(
-              onPressed: () => controller.change(null, status: RxStatus.empty()),
+              onPressed: () =>
+                  controller.change(null, status: RxStatus.empty()),
               child: Text("Try Again"),
             ),
           ],
@@ -63,6 +73,7 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
       ),
     );
   }
+
   @override
   Widget showMainView(UserEntity? state) {
     // TODO: implement showMainView
@@ -78,7 +89,7 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
         ),
         centerTitle: true,
         title: Text(
-          "Register",
+          "Login",
           style: TextStyle(fontSize: 18.sp, color: Colors.black),
         ),
       ),
@@ -100,7 +111,7 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Register',
+                'Login',
                 style: TextStyle(
                   fontWeight: FontWeight.w800,
                   color: AppColors.black,
@@ -133,25 +144,6 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
                     textDirection: TextDirection.ltr,
 
                     children: [
-                      Text('Username', style: TextStyleHelper.textStyle16()),
-                      SizedBox(height: 5.sp),
-                      TextFormField(
-                        controller: controller.usernameController,
-                        decoration: InputDecoration(
-                          hintText: 'Enter your name',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.sp),
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 4.sp,
-                            ),
-                          ),
-
-                          // prefixIcon: Icon(Icons.clear)
-                        ),
-                        validator: controller.validateUsername,
-                      ),
-                      SizedBox(height: 20.sp),
                       Text('Email', style: TextStyleHelper.textStyle16()),
                       SizedBox(height: 5.sp),
 
@@ -215,46 +207,25 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
                         validator: controller.validatePassword,
                         keyboardType: TextInputType.visiblePassword,
                       ),
+                      SizedBox(height: 10.sp),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              "Forgeet Password?",
+                              style: TextStyleHelper.textStyle16(
+                                color: AppColors.textLight,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 20.sp),
-                      Text(
-                        'Confirm Password',
-                        style: TextStyleHelper.textStyle16(),
-                      ),
-                      SizedBox(height: 5.sp),
-                      TextFormField(
-                        controller: controller.confirmPasswordController,
-                        obscureText: controller
-                            .confirmPasswordVisible
-                            .value, // 👈 toggle visibility
 
-                        decoration: InputDecoration(
-                          hintText: 'Enter your Confirm password',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.sp),
-                            borderSide: BorderSide(
-                              color: Colors.black,
-                              width: 4.sp,
-                            ),
-                          ),
-
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              controller.confirmPasswordVisible.value
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () {
-                              controller.confirmPasswordVisible.value =
-                                  !controller.confirmPasswordVisible.value;
-                            },
-
-                            // prefixIcon: Icon(Icons.clear)
-                          ),
-                        ),
-                        validator: controller.validateConfirmPassword,
-                        keyboardType: TextInputType.visiblePassword,
-                      ),
-                      SizedBox(height: 20.h),
                       SizedBox(
                         width: double.maxFinite,
                         height: 40.sp, // takes all available width
@@ -266,19 +237,19 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onPressed: () => controller.register(),
+                          onPressed: () => controller.login(),
 
-                          child:controller.isLoading.value
+                          child: controller.isLoading.value
                               ? CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.0,
-                          )
+                                  color: Colors.white,
+                                  strokeWidth: 2.0,
+                                )
                               : Text(
-                            "Register",
-                            style: TextStyleHelper.textStyle16(
-                              color: Colors.white,
-                            ),
-                          ),
+                                  "Login",
+                                  style: TextStyleHelper.textStyle16(
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
@@ -291,6 +262,4 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
       ),
     );
   }
-
-
 }

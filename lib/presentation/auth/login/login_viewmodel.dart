@@ -1,3 +1,4 @@
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get_it/get_it.dart';
 import 'package:homies_app/core/constants/page_name.dart';
 import 'package:homies_app/core/router/app_router.dart';
@@ -10,4 +11,6 @@ class LoginViewModel extends BaseViewModel<UserEntity> {
     GetIt.I<AppRouter>().router.go( pageName.register);
 
   }
+  void toLogin()async{
+    GetIt.I<AppRouter>().router.go( pageName.login);}
 }
