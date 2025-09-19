@@ -11,7 +11,8 @@ class AppConstants {
   static String get appName => dotenv.env['APP_NAME'] ?? 'HomiesApp';
   static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
   static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
-
+  static const String usersTable = 'users';
+  static const String authTable = 'auth.users';
   static const double defaultPadding = 16.0;
   static const double defaultRadius = 12.0;
 }

@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'user_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(fieldRename: FieldRename.snake) // 👈 Add this part
 class UserModel extends UserEntity {
   const UserModel({
     required String id,

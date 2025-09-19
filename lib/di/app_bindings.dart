@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:homies_app/core/services/supabase_service.dart';
+import 'package:homies_app/data/datasources/remote_data_source.dart';
 import 'package:homies_app/data/repositories/auth_repository.dart';
 import 'package:homies_app/domain/repositories/AuthRepositoryInterface.dart';
 import 'package:logger/logger.dart';
@@ -15,7 +16,11 @@ class AppBindings {
     }, permanent: true);
 
     // Then register AuthRepository
-    Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl());
+    Get.lazyPut<RemoteDataSource>(
+          () => RemoteDataSource(Get.find<SupabaseService>()),
+    );
+    Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(Get.find<SupabaseService>(), Get.find<RemoteDataSource>()),
+    );
 
     // Add other global repositories/services as needed
   }

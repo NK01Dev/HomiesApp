@@ -36,4 +36,7 @@ class SupabaseService extends GetxService {
       rethrow;
     }
   }
+  Future<void> signOut() async {
+    await auth.signOut();
+  }
 }

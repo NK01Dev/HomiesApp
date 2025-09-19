@@ -14,7 +14,7 @@ class RegisterViewModel extends BaseViewModel<UserEntity> {
 ///GlobalKey<FormState> → remote control of the form.
   final formKey =GlobalKey<FormState>();
   final RxBool _isLoading = false.obs;
-
+  final RxString errorMessage = ''.obs;
   RxBool get isLoading => _isLoading; // 👈 add this getter
   RxBool passwordVisible = true.obs;
   RxBool confirmPasswordVisible = false.obs;
@@ -26,6 +26,18 @@ class RegisterViewModel extends BaseViewModel<UserEntity> {
   final confirmPasswordController = TextEditingController();
   // Add repository dependency
   final AuthRepository _authRepository = Get.find();
+  final Rx<UserEntity?> currentUser = Rx<UserEntity?>(null);
+  @override
+  void onInit() {
+    _initAuth();
+    super.onInit();
+  }
+
+  void _initAuth() {
+    _authRepository.userStream.listen((user) {
+      currentUser.value = user;
+    });
+  }
   ///validator function → rules for each field.
 String? validateUsername(String? value) {
   if (value == null || value.trim().isEmpty) {
@@ -66,12 +78,14 @@ String? validateUsername(String? value) {
 
   Future<void> register() async {
     if (!formKey.currentState!.validate()) {
-      Get.snackbar("Error", "Please fix errors ❌");
+      // Get.snackbar("Error", "Please fix errors ❌");
+      logMsg('Please fix errors ❌');
       return;
     }
 
     _isLoading.value = true;
     change(null, status: RxStatus.loading());
+    errorMessage.value = '';
 
     try {
       logMsg('Starting registration with:');
@@ -88,21 +102,27 @@ String? validateUsername(String? value) {
 
       // SUCCÈS
       change(user, status: RxStatus.success());
+      currentUser.value = user;
 
-      Get.snackbar("Success", "Account created successfully ✅");
+      // Get.snackbar("Success", "Account created successfully ✅");
+      logMsg('Account created successfully ✅');
       formKey.currentState?.reset();
 
       // Naviguer après un délai
       await Future.delayed(const Duration(seconds: 2));
-      Get.offAllNamed(pageName.auth);
+      // Get.offAllNamed(pageName.auth);
+      GetIt.I<AppRouter>().router.go(pageName.auth);
+
 
     } catch (e, stackTrace) {
+      errorMessage.value = e.toString();
+
       logMsg('Registration error: $e');
       logMsg('Stack trace: $stackTrace');
 
       // ERREUR
       change(null, status: RxStatus.error(e.toString()));
-      Get.snackbar("Error", "Registration failed: ${e.toString()}");
+      // Get.snackbar("Error", "Registration failed: ${e.toString()}");
     } finally {
       _isLoading.value = false;
     }

@@ -36,8 +36,14 @@ return Scaffold(
     // TODO: implement showMainView
 return Scaffold(
   body: SingleChildScrollView(
-    child: Center(
-      child: Text('Onboard Screen'),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: Text('Onboard Screen'),
+        ),
+        TextButton(onPressed: () => controller.signOut(), child: Text('Logout'))
+      ],
     ),
   ),
 );

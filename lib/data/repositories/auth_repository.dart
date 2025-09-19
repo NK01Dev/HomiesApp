@@ -4,15 +4,22 @@ import 'package:crypto/crypto.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:homies_app/core/constants/utils.dart' show logMsg;
+import 'package:homies_app/core/errors/exceptions.dart';
 import 'package:homies_app/core/services/supabase_service.dart';
+import 'package:homies_app/data/datasources/remote_data_source.dart';
 import 'package:homies_app/data/models/user_model.dart';
 import 'package:homies_app/domain/entities/user_entity.dart';
 import 'package:homies_app/domain/repositories/AuthRepositoryInterface.dart';
-import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+import 'package:supabase_auth_ui/supabase_auth_ui.dart' hide AuthException;
 
-class AuthRepositoryImpl  implements AuthRepository {
+class AuthRepositoryImpl implements AuthRepository {
   // inject Supabase service in
-  final SupabaseService _supabase = Get.find<SupabaseService>();
+  final SupabaseService _supabase;
+  final RemoteDataSource _remoteDataSource;
+  AuthRepositoryImpl(this._supabase, this._remoteDataSource);
+
+  GoTrueClient get _auth => _supabase.auth;
+
   // Méthode pour hasher le mot de passe
   String _hashPassword(String password) {
     final bytes = utf8.encode(password);
@@ -21,58 +28,83 @@ class AuthRepositoryImpl  implements AuthRepository {
   }
 
   @override
-  Future<UserModel?> getCurrentUser() async {
-    // TODO: implement getCurrentUser
-    final currentUser = _supabase.auth.currentUser;
-    if (currentUser == null) return null;
+  Future<UserEntity?> getCurrentUser() async {
     try {
-      final userData = await _supabase.client
-          .from('users')
-          .select()
-          .eq('id', currentUser.id)
-          .single();
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) return null;
 
-      return UserModel.fromJson(userData);
+      return await _remoteDataSource.getUserById(currentUser.id);
     } catch (e) {
       return null;
     }
   }
 
+// AuthRepositoryImpl.dart
+
   @override
-  Future<UserModel> signIn(String email, String password)async {
-    // TODO: implement signIn
-try {
-  final AuthResponse authResponse = await _supabase.auth.signInWithPassword(
-    email:email,
-    password: password,
-  );
-  if (authResponse.user == null) {
-    throw Exception('Sign in failed');
-  }
-  // Fetch user profile from database
-  final userData = await _supabase.client
-      .from('users')
-      .select()
-      .eq('id', authResponse.user!.id)
-      .maybeSingle();
-  if (userData == null) {
-    // This means the user exists in auth.users but not in your public.users table.
-    // This is a critical state that you must handle.
-    throw Exception('User profile not found. Please contact support.');
-  }
-  return UserModel.fromJson(userData);
-} catch (e){
-  throw Exception('Sign in failed: $e');
+  Future<UserModel> signIn(String email, String password) async {
+    try {
+      // 1. Authenticate the user with Supabase.
+      final response = await _auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
 
-}
+      if (response.user == null) {
+        throw AuthException('Invalid credentials');
+      }
 
+      // 2. Attempt to fetch the user profile from your 'users' table.
+      UserModel? user = await _remoteDataSource.getUserById(response.user!.id);
+
+      // 3. If the user profile is NOT found, create it now.
+      if (user == null) {
+        // Create a default UserModel
+        final newUser = UserModel(
+          id: response.user!.id,
+          email: email,
+          userName: response.user!.userMetadata?['user_name'] ?? '', // Use username from auth metadata
+          // Set other default fields
+          firstName: '',
+          lastName: '',
+          passwordHash: '', // Store a placeholder or handle this securely
+          phoneNumber: '',
+          dateOfBirth: null,
+          gender: null,
+          isActive: true,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+
+        // Call createUser to insert the new profile into your 'users' table.
+        user = await _remoteDataSource.createUser(newUser);
+      }
+
+      // 4. Update the last login time.
+      await _remoteDataSource.updateUser(user.id, {
+        'last_login_at': DateTime.now().toIso8601String(),
+      });
+
+      return user;
+    } on AuthException catch (e) {
+      throw AuthException(e.message);
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } catch (e) {
+      throw AuthException('Sign in failed: $e');
+    }
   }
-
   @override
   Future<void> signOut() async {
     // TODO: implement signOut
-    await _supabase.auth.signOut();  }
+    try {
+      await _supabase.signOut();
+    } catch (e) {
+      throw AuthException('Sign out failed: $e');
+    }
+  }
 
+  // AuthRepositoryImpl.dart
 // AuthRepositoryImpl.dart
   @override
   Future<UserModel> signUp({
@@ -81,59 +113,83 @@ try {
     required String userName,
   }) async {
     try {
-      final authResponse = await _supabase.auth.signUp(
-        email: email,
-        password: password,
-        data: {
-          'user_name': userName,
-        },
-      );
+      final authResponse = await _auth.signUp(email: email, password: password);
 
       if (authResponse.user == null) {
         throw Exception('User creation failed');
       }
 
       final String userId = authResponse.user!.id;
-      // Hasher le mot de passe avant de l'insérer
       final hashedPassword = _hashPassword(password);
-      // Insert user profile with only essential data
-      final userData = {
-        'id': userId,
-        'email': email,
-        'user_name': userName,
-        'password_hash': hashedPassword, // ✅ Maintenant fourni
 
-        'first_name': '', // Empty for now
-        'last_name': '',  // Empty for now
-        'preferred_language': 'en',
-        'timezone': 'UTC',
-        'is_active': true,
-      };
+      // Create the user profile first
+      final userModel = UserModel(
+        id: userId, // Use the ID from the auth response
+        email: email,
+        firstName: '',
+        lastName: '',
+        passwordHash: hashedPassword,
+        phoneNumber: '',
+        dateOfBirth: null,
+        gender: null,
+        userName: userName,
+        isActive: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
 
-      final insertedUser = await _supabase.client
-          .from('users')
-          .insert(userData)
-          .select()
-          .single();
+      // Call createUser to insert the profile into your 'users' table.
+      final createdUser = await _remoteDataSource.createUser(userModel);
 
-      return UserModel.fromJson(insertedUser);
+      // Now, return the created user model.
+      return createdUser;
 
-    } catch (e, stackTrace) {
-      logMsg('SignUp error details: $e');
-      logMsg('Stack trace: $stackTrace');
-
-      // Message d'erreur plus spécifique
-      if (e.toString().contains('password_hash')) {
-        logMsg('Stack trace: $stackTrace');
-
-        throw Exception('Database configuration error. Please contact support.');
-      } else if (e.toString().contains('network') || e.toString().contains('connection')) {
-        throw Exception('Network error. Please check your connection and try again.');
-      } else if (e.toString().contains('unique') || e.toString().contains('duplicate')) {
-        throw Exception('Email or username already exists. Please try different credentials.');
-      } else {
-        throw Exception('Registration failed: ${e.toString()}');
-      }
+    } on AuthException catch (e) {
+      logMsg('Registration error: $e');
+      throw AuthException(e.message);
+    } on PostgrestException catch (e) {
+      logMsg('Postgrest error during sign up: $e');
+      throw ServerException(e.message);
+    } catch (e) {
+      logMsg('General error during sign up: $e');
+      throw AuthException('Sign up failed: $e');
     }
+  }
+
+  @override
+  Future<void> resetPassword(String email)async  {
+    try {
+      await _auth.resetPasswordForEmail(email);
+    } on AuthException catch (e) {
+      throw AuthException(e.message);
+    } catch (e) {
+      throw AuthException('Password reset failed: $e');
+    }
+  }
+
+  @override
+  Future<void> updateUserProfile(Map<String, dynamic> updates) async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        throw AuthException('No authenticated user');
+      }
+
+      await _remoteDataSource.updateUser(currentUser.id, updates);
+    } on AuthException catch (e) {
+      throw AuthException(e.message);
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    }
+  }
+
+  @override
+  Stream<UserEntity?> get userStream {
+    return _auth.onAuthStateChange.map((authState) async {
+      final user = authState.session?.user;
+      if (user == null) return null;
+
+      return await _remoteDataSource.getUserById(user.id);
+    }).asyncMap((event) => event);
   }
 }
