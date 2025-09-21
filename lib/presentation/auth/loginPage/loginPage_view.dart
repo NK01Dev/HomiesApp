@@ -3,12 +3,16 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get_it/get_it.dart';
 import 'package:homies_app/core/themes/app_colors.dart';
 import 'package:homies_app/core/utils/textStyleHelper.dart';
 import 'package:homies_app/domain/entities/user_entity.dart';
 import 'package:homies_app/presentation/auth/login/login_viewmodel.dart';
 import 'package:homies_app/presentation/auth/loginPage/loginPage_viewmodel.dart';
 import 'package:homies_app/presentation/base/base_view.dart';
+
+import '../../../core/constants/page_name.dart';
+import '../../../core/router/app_router.dart';
 
 class LoginpageView extends BaseView<LoginpageViewmodel, UserEntity> {
   final responsiveTextStyle = TextStyleHelper.textStyle18(color: Colors.blue);
@@ -80,7 +84,10 @@ class LoginpageView extends BaseView<LoginpageViewmodel, UserEntity> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            GetIt.I<AppRouter>().router.pop();
+
+          },
           icon: Icon(
             Icons.arrow_back_ios_rounded,
             size: 24.sp,
@@ -109,7 +116,7 @@ class LoginpageView extends BaseView<LoginpageViewmodel, UserEntity> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding:  EdgeInsets.all(8.sp),
               child: Text(
                 'Login',
                 style: TextStyle(
@@ -121,7 +128,7 @@ class LoginpageView extends BaseView<LoginpageViewmodel, UserEntity> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding:  EdgeInsets.all(8.sp),
               child: Text(
                 'Login to continue using the app',
                 style: TextStyle(
@@ -132,13 +139,13 @@ class LoginpageView extends BaseView<LoginpageViewmodel, UserEntity> {
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: 20.h),
+            SizedBox(height: 10.h),
             Obx(
               () => Form(
                 key: controller.formKey,
 
                 child: Padding(
-                  padding: EdgeInsets.all(20.w), // Responsive padding
+                  padding: EdgeInsets.all(15.w), // Responsive padding
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     textDirection: TextDirection.ltr,
@@ -151,6 +158,8 @@ class LoginpageView extends BaseView<LoginpageViewmodel, UserEntity> {
                         controller: controller.emailController,
                         decoration: InputDecoration(
                           hintText: 'Enter your Email',
+                          hintStyle: TextStyleHelper.textStyle14(color: Colors.black38),
+
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.sp),
                             borderSide: BorderSide(
@@ -182,6 +191,8 @@ class LoginpageView extends BaseView<LoginpageViewmodel, UserEntity> {
 
                         decoration: InputDecoration(
                           hintText: 'Enter your password',
+                          hintStyle: TextStyleHelper.textStyle14(color: Colors.black38),
+
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.sp),
                             borderSide: BorderSide(

@@ -8,9 +8,9 @@ import 'package:homies_app/presentation/base/base_viewmodel.dart';
 class LoginViewModel extends BaseViewModel<UserEntity> {
 
   void toRegister()async{
-    GetIt.I<AppRouter>().router.go( pageName.register);
+    GetIt.I<AppRouter>().router.push( pageName.register);
 
   }
   void toLogin()async{
-    GetIt.I<AppRouter>().router.go( pageName.login);}
+    GetIt.I<AppRouter>().router.push( pageName.login);}
 }

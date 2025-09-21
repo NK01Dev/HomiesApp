@@ -54,99 +54,101 @@ class LoginView extends BaseView<LoginViewModel, UserEntity> {
         // ),
         backgroundColor: AppColors.primaryLight,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: 10.h),
-            Image.asset(
-              'assets/images/image_1.png',
-              width: 410.w,
-              height: 270.h,
-              fit: BoxFit.cover,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Everything you need in one place',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.black,
-                  fontSize: 32.sp,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(height: 10.h),
+              Image.asset(
+                'assets/images/image_1.png',
+                width: 350.w,
+                height: 220.h,
+                fit: BoxFit.cover,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Everything you need in one place',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.black,
+                    fontSize: 28.sp,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ),
-            SizedBox(height: 20.h),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Welcome! Manage all your household tasks, collaborate on projects, and track your expenses with your homies.',
-                textAlign: TextAlign.center,
-                style: TextStyleHelper.textStyle16(color: Colors.grey.shade700),
+              SizedBox(height: 20.h),
+              Padding(
+                padding:  EdgeInsets.all(8.sp),
+                child: Text(
+                  'Welcome! Manage all your household tasks, collaborate on projects, and track your expenses with your homies.',
+                  textAlign: TextAlign.center,
+                  style: TextStyleHelper.textStyle16(color: Colors.grey.shade700),
+                ),
               ),
-            ),
-            SizedBox(height: 20.h),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: double.infinity, // باش ياخد كامل العرض
-
-                child: ElevatedButton(
-                  onPressed: () {
-                    controller.toLogin();
-                  },
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+              SizedBox(height: 20.h),
+              Padding(
+                padding:  EdgeInsets.all(8.sp),
+                child: SizedBox(
+                  width: double.infinity, // باش ياخد كامل العرض
+        
+                  child: ElevatedButton(
+                    onPressed: () {
+                      controller.toLogin();
+                    },
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.sp),
+                        ),
+                      ),
+                      backgroundColor: MaterialStateProperty.all(
+                        AppColors.primary,
+                      ),
+                      padding: MaterialStateProperty.all(
+                        // ✅
+                        EdgeInsets.symmetric(vertical: 20.sp), // ارتفاع الزر
                       ),
                     ),
-                    backgroundColor: MaterialStateProperty.all(
-                      AppColors.primary,
+                    child: Text(
+                      "Login",
+                      textAlign: TextAlign.center,
+                      style: TextStyleHelper.textStyle16(color: Colors.white),
                     ),
-                    padding: MaterialStateProperty.all(
-                      // ✅
-                      EdgeInsets.symmetric(vertical: 20.sp), // ارتفاع الزر
-                    ),
-                  ),
-                  child: Text(
-                    "Login",
-                    textAlign: TextAlign.center,
-                    style: TextStyleHelper.textStyle16(color: Colors.white),
                   ),
                 ),
               ),
+              Padding(
+                padding:  EdgeInsets.all(8.sp),
+                child: SizedBox(
+                  width: double.infinity, // باش ياخد كامل العرض
+                  child: OutlinedButton(
+                    onPressed: () {
+        controller.toRegister();                  },
+                    child: Text(
+                      "Register",
+        
+                      textAlign: TextAlign.center,
+                      style: TextStyleHelper.textStyle16(color: Colors.black),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                             side: BorderSide(color: Colors.black, width: 2), // Red border, 2px wide
+          shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10), // Rounded corners
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: double.infinity, // باش ياخد كامل العرض
-                child: OutlinedButton(
-                  onPressed: () {
-controller.toRegister();                  },
-                  child: Text(
-                    "Register",
-
-                    textAlign: TextAlign.center,
-                    style: TextStyleHelper.textStyle16(color: Colors.black),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                           side: BorderSide(color: Colors.black, width: 2), // Red border, 2px wide
-  shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10), // Rounded corners
-    ),
-                        padding:  EdgeInsets.symmetric(vertical: 20.sp),
-
-
-
-
-
+                          padding:  EdgeInsets.symmetric(vertical: 20.sp),
+        
+        
+        
+        
+        
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

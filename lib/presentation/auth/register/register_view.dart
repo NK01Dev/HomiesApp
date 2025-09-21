@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 import 'package:homies_app/core/themes/app_colors.dart';
 import 'package:homies_app/core/utils/textStyleHelper.dart';
 import 'package:homies_app/domain/entities/user_entity.dart';
 import 'package:homies_app/presentation/auth/register/regitser_viewmodel.dart';
 import 'package:homies_app/presentation/base/base_view.dart';
+
+import '../../../core/router/app_router.dart';
 
 class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
   final responsiveTextStyle = TextStyleHelper.textStyle18(color: Colors.blue);
@@ -69,7 +72,9 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            GetIt.I<AppRouter>().router.pop();
+                  },
           icon: Icon(
             Icons.arrow_back_ios_rounded,
             size: 24.sp,
@@ -139,6 +144,7 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
                         controller: controller.usernameController,
                         decoration: InputDecoration(
                           hintText: 'Enter your name',
+                          hintStyle: TextStyleHelper.textStyle14(color: Colors.black38),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.sp),
                             borderSide: BorderSide(
@@ -159,6 +165,8 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
                         controller: controller.emailController,
                         decoration: InputDecoration(
                           hintText: 'Enter your Email',
+                          hintStyle: TextStyleHelper.textStyle14(color: Colors.black38),
+
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.sp),
                             borderSide: BorderSide(
@@ -190,6 +198,8 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
 
                         decoration: InputDecoration(
                           hintText: 'Enter your password',
+                          hintStyle: TextStyleHelper.textStyle14(color: Colors.black38),
+
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.sp),
                             borderSide: BorderSide(
@@ -229,6 +239,8 @@ class RegisterView extends BaseView<RegisterViewModel, UserEntity> {
 
                         decoration: InputDecoration(
                           hintText: 'Enter your Confirm password',
+                          hintStyle: TextStyleHelper.textStyle14(color: Colors.black38),
+
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.sp),
                             borderSide: BorderSide(

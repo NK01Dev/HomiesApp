@@ -75,7 +75,9 @@ String? validateUsername(String? value) {
     }
     return null;
   }
-
+void back(){
+  GetIt.I<AppRouter>().router.pop();
+}
   Future<void> register() async {
     if (!formKey.currentState!.validate()) {
       // Get.snackbar("Error", "Please fix errors ❌");
@@ -127,6 +129,7 @@ String? validateUsername(String? value) {
       _isLoading.value = false;
     }
   }
+
   @override
   void onClose() {
     usernameController.dispose();
